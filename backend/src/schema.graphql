@@ -1,23 +1,48 @@
-type Book {
+interface Node {
+  id: ID!
+}
+
+interface Content {
+  title: String!
+  createdAt: String!
+}
+
+type Book implements Node & Content {
   id: ID!
   title: String!
+  createdAt: String!
+  pages: Int
   author: Author!
 }
 
-type Author {
+type Author implements Node {
   id: ID!
   name: String!
+  bio: String
   books: [Book!]!
 }
 
+type Review implements Node & Content {
+  id: ID!
+  title: String!
+  createdAt: String!
+  rating: Int!
+  content: String!
+  book: Book!
+}
+
 type Query {
+  node(id: ID!): Node
   books: [Book!]!
   book(id: ID!): Book
   authors: [Author!]!
   author(id: ID!): Author
+  reviews: [Review!]!
+  review(id: ID!): Review
 }
 
 type Mutation {
-  addBook(title: String!, authorId: ID!): Book!
-  addAuthor(name: String!): Author!
+  addBook(title: String!, authorId: ID!, pages: Int): Book!
+  addAuthor(name: String!, bio: String): Author!
+  addReview(bookId: ID!, title: String!, rating: Int!, content: String!): Review!
 } 

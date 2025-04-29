@@ -12,12 +12,12 @@ export const AuthorsList: React.FC = () => {
     <div>
       <h1>Authors</h1>
       <div>
-        {data?.authors.map((author: { id: string; name: string; books: Array<{ id: string; title: string }> }) => (
+        {data?.authors.map((author) => (
           <div key={author.id} className="card author-card">
             <h2 className="author-name">
               <Link to={`/authors/${author.id}`}>{author.name}</Link>
             </h2>
-            <p>{author.books.length} books</p>
+            <p>{author.books?.length || 0} books</p>
           </div>
         ))}
       </div>
