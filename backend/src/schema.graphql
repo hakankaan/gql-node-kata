@@ -31,9 +31,20 @@ type Review implements Node & Content {
   book: Book!
 }
 
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  totalCount: Int!
+}
+
+type BookConnection {
+  edges: [Book!]!
+  pageInfo: PageInfo!
+}
+
 type Query {
   node(id: ID!): Node
-  books: [Book!]!
+  books(limit: Int, offset: Int): BookConnection!
   book(id: ID!): Book
   authors: [Author!]!
   author(id: ID!): Author

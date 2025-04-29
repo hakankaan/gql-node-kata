@@ -1,7 +1,5 @@
 import { useGetNodeQuery } from '../generated/graphql';
 
-type NodeType = 'Book' | 'Author' | 'Review';
-
 interface Node {
   __typename?: string;
   id: string;

@@ -2,16 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGetAllContentQuery } from '../generated/graphql';
 
-interface Node {
-  __typename?: string;
-  id: string;
-}
-
-interface Content extends Node {
-  title: string;
-  createdAt: string;
-}
-
 interface ContentListItem {
   __typename: 'Book' | 'Review';
   id: string;
@@ -25,12 +15,17 @@ export function ContentList() {
 
   useEffect(() => {
     if (data) {
-      // Combine books and reviews as they both implement the Content interface
-      const books = data.books;
-      const reviews = data.reviews;
-      const allContent = [...books, ...reviews];
+      const bookItems = data.books.edges || [];
+      const reviewItems = data.reviews || [];
       
-      // Sort by creation date, most recent first
+      const bookContent = bookItems.map(book => ({
+        __typename: 'Book' as const,
+        id: book.id,
+        title: book.title,
+        createdAt: book.createdAt
+      }));
+      
+      const allContent = [...bookContent, ...reviewItems];
       const sortedContent = allContent.sort((a: ContentListItem, b: ContentListItem) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );

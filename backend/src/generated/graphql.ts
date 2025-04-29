@@ -33,6 +33,12 @@ export type Book = Content & Node & {
   title: Scalars['String']['output'];
 };
 
+export type BookConnection = {
+  __typename?: 'BookConnection';
+  edges: Array<Book>;
+  pageInfo: PageInfo;
+};
+
 export type Content = {
   createdAt: Scalars['String']['output'];
   title: Scalars['String']['output'];
@@ -70,12 +76,19 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  totalCount: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   author?: Maybe<Author>;
   authors: Array<Author>;
   book?: Maybe<Book>;
-  books: Array<Book>;
+  books: BookConnection;
   node?: Maybe<Node>;
   review?: Maybe<Review>;
   reviews: Array<Review>;
@@ -89,6 +102,12 @@ export type QueryAuthorArgs = {
 
 export type QueryBookArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryBooksArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -189,12 +208,14 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 export type ResolversTypes = {
   Author: ResolverTypeWrapper<Author>;
   Book: ResolverTypeWrapper<Book>;
+  BookConnection: ResolverTypeWrapper<BookConnection>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Content: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Content']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
+  PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
   Review: ResolverTypeWrapper<Review>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -204,12 +225,14 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Author: Author;
   Book: Book;
+  BookConnection: BookConnection;
   Boolean: Scalars['Boolean']['output'];
   Content: ResolversInterfaceTypes<ResolversParentTypes>['Content'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
+  PageInfo: PageInfo;
   Query: {};
   Review: Review;
   String: Scalars['String']['output'];
@@ -232,6 +255,12 @@ export type BookResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type BookConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['BookConnection'] = ResolversParentTypes['BookConnection']> = {
+  edges?: Resolver<Array<ResolversTypes['Book']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ContentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Content'] = ResolversParentTypes['Content']> = {
   __resolveType: TypeResolveFn<'Book' | 'Review', ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -249,11 +278,18 @@ export type NodeResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
+export type PageInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
+  hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasPreviousPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   author?: Resolver<Maybe<ResolversTypes['Author']>, ParentType, ContextType, RequireFields<QueryAuthorArgs, 'id'>>;
   authors?: Resolver<Array<ResolversTypes['Author']>, ParentType, ContextType>;
   book?: Resolver<Maybe<ResolversTypes['Book']>, ParentType, ContextType, RequireFields<QueryBookArgs, 'id'>>;
-  books?: Resolver<Array<ResolversTypes['Book']>, ParentType, ContextType>;
+  books?: Resolver<ResolversTypes['BookConnection'], ParentType, ContextType, Partial<QueryBooksArgs>>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   review?: Resolver<Maybe<ResolversTypes['Review']>, ParentType, ContextType, RequireFields<QueryReviewArgs, 'id'>>;
   reviews?: Resolver<Array<ResolversTypes['Review']>, ParentType, ContextType>;
@@ -272,9 +308,11 @@ export type ReviewResolvers<ContextType = any, ParentType extends ResolversParen
 export type Resolvers<ContextType = any> = {
   Author?: AuthorResolvers<ContextType>;
   Book?: BookResolvers<ContextType>;
+  BookConnection?: BookConnectionResolvers<ContextType>;
   Content?: ContentResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
+  PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Review?: ReviewResolvers<ContextType>;
 };

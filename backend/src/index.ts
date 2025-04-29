@@ -49,11 +49,23 @@ const resolvers: Resolvers = {
 
       return null;
     },
-    books: () => {
-      return books.map(book => ({
+    books: (_, { limit = 3, offset = 0 }) => {
+      const totalCount = books.length;
+      const paginatedBooks = books.slice(offset, offset + limit);
+      
+      const edges = paginatedBooks.map(book => ({
         ...book,
         author: { id: '', name: '', books: [] }
       }));
+      
+      return {
+        edges,
+        pageInfo: {
+          hasNextPage: offset + limit < totalCount,
+          hasPreviousPage: offset > 0,
+          totalCount
+        }
+      };
     },
     book: (_, { id }) => {
       const book = books.find(book => book.id === id);

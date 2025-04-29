@@ -34,6 +34,12 @@ export type Book = Content & Node & {
   title: Scalars['String']['output'];
 };
 
+export type BookConnection = {
+  __typename?: 'BookConnection';
+  edges: Array<Book>;
+  pageInfo: PageInfo;
+};
+
 export type Content = {
   createdAt: Scalars['String']['output'];
   title: Scalars['String']['output'];
@@ -71,12 +77,19 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  totalCount: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   author?: Maybe<Author>;
   authors: Array<Author>;
   book?: Maybe<Book>;
-  books: Array<Book>;
+  books: BookConnection;
   node?: Maybe<Node>;
   review?: Maybe<Review>;
   reviews: Array<Review>;
@@ -90,6 +103,12 @@ export type QueryAuthorArgs = {
 
 export type QueryBookArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryBooksArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -121,7 +140,7 @@ export type ReviewFieldsFragment = { __typename?: 'Review', id: string, title: s
 export type GetAllContentQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllContentQuery = { __typename?: 'Query', books: Array<{ __typename: 'Book', id: string, title: string, createdAt: string }>, reviews: Array<{ __typename: 'Review', id: string, title: string, createdAt: string }> };
+export type GetAllContentQuery = { __typename?: 'Query', books: { __typename?: 'BookConnection', edges: Array<{ __typename?: 'Book', id: string, title: string, createdAt: string }>, pageInfo: { __typename?: 'PageInfo', totalCount: number } }, reviews: Array<{ __typename: 'Review', id: string, title: string, createdAt: string }> };
 
 export type GetNodeQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -130,10 +149,13 @@ export type GetNodeQueryVariables = Exact<{
 
 export type GetNodeQuery = { __typename?: 'Query', node?: { __typename: 'Author', name: string, bio?: string | null, id: string } | { __typename: 'Book', title: string, createdAt: string, pages?: number | null, id: string, author: { __typename?: 'Author', id: string, name: string } } | { __typename: 'Review', title: string, createdAt: string, rating: number, content: string, id: string, book: { __typename?: 'Book', id: string, title: string } } | null };
 
-export type GetBooksQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetBooksQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
 
 
-export type GetBooksQuery = { __typename?: 'Query', books: Array<{ __typename?: 'Book', id: string, title: string, createdAt: string, pages?: number | null, author: { __typename?: 'Author', id: string, name: string } }> };
+export type GetBooksQuery = { __typename?: 'Query', books: { __typename?: 'BookConnection', edges: Array<{ __typename?: 'Book', id: string, title: string, createdAt: string, pages?: number | null, author: { __typename?: 'Author', id: string, name: string } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, totalCount: number } } };
 
 export type GetBookQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -227,11 +249,15 @@ export const ReviewFieldsFragmentDoc = gql`
     `;
 export const GetAllContentDocument = gql`
     query GetAllContent {
-  books {
-    __typename
-    id
-    title
-    createdAt
+  books(limit: 10) {
+    edges {
+      id
+      title
+      createdAt
+    }
+    pageInfo {
+      totalCount
+    }
   }
   reviews {
     __typename
@@ -338,9 +364,16 @@ export type GetNodeLazyQueryHookResult = ReturnType<typeof useGetNodeLazyQuery>;
 export type GetNodeSuspenseQueryHookResult = ReturnType<typeof useGetNodeSuspenseQuery>;
 export type GetNodeQueryResult = Apollo.QueryResult<GetNodeQuery, GetNodeQueryVariables>;
 export const GetBooksDocument = gql`
-    query GetBooks {
-  books {
-    ...BookFields
+    query GetBooks($limit: Int, $offset: Int) {
+  books(limit: $limit, offset: $offset) {
+    edges {
+      ...BookFields
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      totalCount
+    }
   }
 }
     ${BookFieldsFragmentDoc}`;
@@ -357,6 +390,8 @@ export const GetBooksDocument = gql`
  * @example
  * const { data, loading, error } = useGetBooksQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *   },
  * });
  */

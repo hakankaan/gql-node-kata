@@ -1,90 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface Book {
-  id: string;
-  title: string;
-}
-
-const fetchBooks = async (): Promise<Book[]> => {
-  const query = `
-    query GetBooks {
-      books {
-        id
-        title
-      }
-    }
-  `;
-
-  try {
-    const response = await fetch('http://localhost:4000/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query }),
-    });
-    
-    const result = await response.json();
-    return result.data.books;
-  } catch (error) {
-    console.error('Error fetching books:', error);
-    return [];
-  }
-};
-
-const addReview = async (
-  bookId: string,
-  title: string,
-  rating: number,
-  content: string
-): Promise<boolean> => {
-  const mutation = `
-    mutation AddReview($bookId: ID!, $title: String!, $rating: Int!, $content: String!) {
-      addReview(bookId: $bookId, title: $title, rating: $rating, content: $content) {
-        id
-        title
-      }
-    }
-  `;
-
-  try {
-    const response = await fetch('http://localhost:4000/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: mutation,
-        variables: { bookId, title, rating, content },
-      }),
-    });
-    
-    const result = await response.json();
-    return !!result.data?.addReview;
-  } catch (error) {
-    console.error('Error adding review:', error);
-    return false;
-  }
-};
+import { useAddReviewMutation, useGetBooksQuery } from '../generated/graphql';
 
 export const AddReview: React.FC = () => {
   const [title, setTitle] = useState('');
   const [bookId, setBookId] = useState('');
   const [rating, setRating] = useState(5);
   const [content, setContent] = useState('');
-  const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadBooks = async () => {
-      const data = await fetchBooks();
-      setBooks(data);
-      if (data.length > 0) {
-        setBookId(data[0].id);
-      }
-    };
+  const { data, loading: booksLoading } = useGetBooksQuery();
+  const [addReviewMutation] = useAddReviewMutation();
 
-    loadBooks();
-  }, []);
+  useEffect(() => {
+    if (data?.books?.edges && data.books.edges.length > 0) {
+      setBookId(data.books.edges[0].id);
+    }
+  }, [data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,9 +32,16 @@ export const AddReview: React.FC = () => {
     setError(null);
 
     try {
-      const success = await addReview(bookId, title, rating, content);
+      const { data } = await addReviewMutation({ 
+        variables: { 
+          title, 
+          bookId, 
+          rating, 
+          content 
+        } 
+      });
       
-      if (success) {
+      if (data?.addReview) {
         navigate('/content');
       } else {
         setError('Failed to add review');
@@ -112,6 +53,8 @@ export const AddReview: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const hasBooks = data?.books?.edges && data.books.edges.length > 0;
 
   return (
     <div className="add-review">
@@ -126,12 +69,12 @@ export const AddReview: React.FC = () => {
             id="book"
             value={bookId}
             onChange={(e) => setBookId(e.target.value)}
-            disabled={loading || books.length === 0}
+            disabled={loading || booksLoading || !hasBooks}
           >
-            {books.length === 0 ? (
+            {!hasBooks ? (
               <option value="">Loading books...</option>
             ) : (
-              books.map((book) => (
+              data.books.edges.map((book) => (
                 <option key={book.id} value={book.id}>
                   {book.title}
                 </option>

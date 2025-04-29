@@ -53,6 +53,55 @@ export const books: Book[] = [
     createdAt: '2018-11-20T09:15:00Z',
     pages: 295
   },
+  {
+    id: '4',
+    title: 'The Great Gatsby',
+    authorId: '3',
+    createdAt: '2019-06-12T11:45:00Z',
+    pages: 180
+  },
+  {
+    id: '5',
+    title: 'To Kill a Mockingbird',
+    authorId: '2',
+    createdAt: '2021-03-05T13:20:00Z',
+    pages: 281
+  },
+  {
+    id: '6',
+    title: '1984',
+    authorId: '3',
+    createdAt: '2020-09-10T15:30:00Z',
+    pages: 328
+  },
+  {
+    id: '7',
+    title: 'Pride and Prejudice',
+    authorId: '1',
+    createdAt: '2018-04-20T10:10:00Z',
+    pages: 279
+  },
+  {
+    id: '8',
+    title: 'The Catcher in the Rye',
+    authorId: '2',
+    createdAt: '2017-11-15T12:30:00Z',
+    pages: 234
+  },
+  {
+    id: '9',
+    title: 'The Picture of Dorian Gray',
+    authorId: '3',
+    createdAt: '2016-08-25T14:45:00Z',
+    pages: 304
+  },
+  {
+    id: '10',
+    title: 'The Adventures of Sherlock Holmes',
+    authorId: '2',
+    createdAt: '2015-05-30T16:50:00Z',
+    pages: 320
+  }
 ];
 
 export const authors: Author[] = [

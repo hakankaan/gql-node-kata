@@ -11,7 +11,10 @@ export const AddBook: React.FC = () => {
   const { loading: authorsLoading, error: authorsError, data: authorsData } = useGetAuthorsQuery();
   
   const [addBook, { loading: addingBook, error: addBookError }] = useAddBookMutation({
-    refetchQueries: [{ query: GetBooksDocument }],
+    refetchQueries: [{ 
+      query: GetBooksDocument,
+      variables: { limit: 5, offset: 0 }
+    }],
     onCompleted: (data) => {
       navigate(`/books/${data.addBook.id}`);
     }

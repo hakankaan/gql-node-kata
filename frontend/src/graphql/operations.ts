@@ -41,11 +41,15 @@ export const QUERIES = {
 
   GET_ALL_CONTENT: gql`
     query GetAllContent {
-      books {
-        __typename
-        id
-        title
-        createdAt
+      books(limit: 10) {
+        edges {
+          id
+          title
+          createdAt
+        }
+        pageInfo {
+          totalCount
+        }
       }
       reviews {
         __typename
@@ -91,9 +95,16 @@ export const QUERIES = {
 
 
   GET_BOOKS: gql`
-    query GetBooks {
-      books {
-        ...BookFields
+    query GetBooks($limit: Int, $offset: Int) {
+      books(limit: $limit, offset: $offset) {
+        edges {
+          ...BookFields
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          totalCount
+        }
       }
     }
     ${BOOK_FIELDS}
