@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "rootDir": "src",
+      "outDir": "dist",
+      "lib": ["es2020"],
+      "target": "es2020",
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "allowImportingTsExtensions": false,
+      "esModuleInterop": true,
+      "types": ["node"],
+      "allowSyntheticDefaultImports": true
+    },
+    "exclude": ["codegen.ts"]
+  }
