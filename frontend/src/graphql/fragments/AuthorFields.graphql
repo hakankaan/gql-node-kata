@@ -1,0 +1,5 @@
+fragment AuthorFields on Author {
+  id
+  name
+  bio
+} 

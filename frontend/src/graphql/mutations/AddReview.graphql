@@ -1,0 +1,7 @@
+#import "../fragments/ReviewFields.graphql" 
+
+mutation AddReview($title: String!, $bookId: ID!, $rating: Int!, $content: String!) {
+  addReview(title: $title, bookId: $bookId, rating: $rating, content: $content) {
+    ...ReviewFields
+  }
+}

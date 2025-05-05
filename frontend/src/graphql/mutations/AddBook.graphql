@@ -1,0 +1,5 @@
+mutation AddBook($title: String!, $authorId: ID!, $pages: Int) {
+  addBook(title: $title, authorId: $authorId, pages: $pages) {
+    ...BookFields
+  }
+}

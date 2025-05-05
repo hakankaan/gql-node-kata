@@ -16,6 +16,12 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type AuthPayload = {
+  __typename?: 'AuthPayload';
+  token: Scalars['String']['output'];
+  user: User;
+};
+
 export type Author = Node & {
   __typename?: 'Author';
   bio?: Maybe<Scalars['String']['output']>;
@@ -49,6 +55,8 @@ export type Mutation = {
   addAuthor: Author;
   addBook: Book;
   addReview: Review;
+  signIn: AuthPayload;
+  signUp: AuthPayload;
 };
 
 
@@ -72,6 +80,19 @@ export type MutationAddReviewArgs = {
   title: Scalars['String']['input'];
 };
 
+
+export type MutationSignInArgs = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+
+export type MutationSignUpArgs = {
+  email: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
 export type Node = {
   id: Scalars['ID']['output'];
 };
@@ -89,6 +110,7 @@ export type Query = {
   authors: Array<Author>;
   book?: Maybe<Book>;
   books: BookConnection;
+  me?: Maybe<User>;
   node?: Maybe<Node>;
   review?: Maybe<Review>;
   reviews: Array<Review>;
@@ -128,6 +150,14 @@ export type Review = Content & Node & {
   id: Scalars['ID']['output'];
   rating: Scalars['Int']['output'];
   title: Scalars['String']['output'];
+};
+
+export type User = Node & {
+  __typename?: 'User';
+  createdAt: Scalars['String']['output'];
+  email: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
 };
 
 
@@ -201,11 +231,12 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
   Content: ( Book ) | ( Review );
-  Node: ( Author ) | ( Book ) | ( Review );
+  Node: ( Author ) | ( Book ) | ( Review ) | ( User );
 };
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  AuthPayload: ResolverTypeWrapper<AuthPayload>;
   Author: ResolverTypeWrapper<Author>;
   Book: ResolverTypeWrapper<Book>;
   BookConnection: ResolverTypeWrapper<BookConnection>;
@@ -219,10 +250,12 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   Review: ResolverTypeWrapper<Review>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  User: ResolverTypeWrapper<User>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  AuthPayload: AuthPayload;
   Author: Author;
   Book: Book;
   BookConnection: BookConnection;
@@ -236,6 +269,13 @@ export type ResolversParentTypes = {
   Query: {};
   Review: Review;
   String: Scalars['String']['output'];
+  User: User;
+};
+
+export type AuthPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthPayload'] = ResolversParentTypes['AuthPayload']> = {
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type AuthorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Author'] = ResolversParentTypes['Author']> = {
@@ -271,10 +311,12 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   addAuthor?: Resolver<ResolversTypes['Author'], ParentType, ContextType, RequireFields<MutationAddAuthorArgs, 'name'>>;
   addBook?: Resolver<ResolversTypes['Book'], ParentType, ContextType, RequireFields<MutationAddBookArgs, 'authorId' | 'title'>>;
   addReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationAddReviewArgs, 'bookId' | 'content' | 'rating' | 'title'>>;
+  signIn?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationSignInArgs, 'email' | 'password'>>;
+  signUp?: Resolver<ResolversTypes['AuthPayload'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'email' | 'name' | 'password'>>;
 };
 
 export type NodeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
-  __resolveType: TypeResolveFn<'Author' | 'Book' | 'Review', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Author' | 'Book' | 'Review' | 'User', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
@@ -290,6 +332,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   authors?: Resolver<Array<ResolversTypes['Author']>, ParentType, ContextType>;
   book?: Resolver<Maybe<ResolversTypes['Book']>, ParentType, ContextType, RequireFields<QueryBookArgs, 'id'>>;
   books?: Resolver<ResolversTypes['BookConnection'], ParentType, ContextType, Partial<QueryBooksArgs>>;
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   review?: Resolver<Maybe<ResolversTypes['Review']>, ParentType, ContextType, RequireFields<QueryReviewArgs, 'id'>>;
   reviews?: Resolver<Array<ResolversTypes['Review']>, ParentType, ContextType>;
@@ -305,7 +348,16 @@ export type ReviewResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
+  AuthPayload?: AuthPayloadResolvers<ContextType>;
   Author?: AuthorResolvers<ContextType>;
   Book?: BookResolvers<ContextType>;
   BookConnection?: BookConnectionResolvers<ContextType>;
@@ -315,5 +367,6 @@ export type Resolvers<ContextType = any> = {
   PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Review?: ReviewResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
 };
 

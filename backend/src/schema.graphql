@@ -31,6 +31,18 @@ type Review implements Node & Content {
   book: Book!
 }
 
+type User implements Node {
+  id: ID!
+  email: String!
+  name: String!
+  createdAt: String!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
 type PageInfo {
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
@@ -50,10 +62,15 @@ type Query {
   author(id: ID!): Author
   reviews: [Review!]!
   review(id: ID!): Review
+  me: User
 }
 
 type Mutation {
   addBook(title: String!, authorId: ID!, pages: Int): Book!
   addAuthor(name: String!, bio: String): Author!
   addReview(bookId: ID!, title: String!, rating: Int!, content: String!): Review!
+  
+  # Auth mutations
+  signUp(email: String!, password: String!, name: String!): AuthPayload!
+  signIn(email: String!, password: String!): AuthPayload!
 } 

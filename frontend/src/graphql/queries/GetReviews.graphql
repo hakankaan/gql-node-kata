@@ -1,0 +1,8 @@
+query getReviews {
+  reviews {
+    id
+    id
+    ...ReviewFields
+  }
+}
+

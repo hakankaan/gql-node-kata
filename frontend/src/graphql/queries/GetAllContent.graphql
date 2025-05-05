@@ -1,0 +1,18 @@
+query GetAllContent {
+  books(limit: 10) {
+    edges {
+      id
+      title
+      createdAt
+    }
+    pageInfo {
+      totalCount
+    }
+  }
+  reviews {
+    __typename
+    id
+    title
+    createdAt
+  }
+} 

@@ -5,14 +5,23 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { authors, books, Book as DataBook, reviews, Review as DataReview } from './data.js';
 import { Resolvers } from './generated/graphql.js';
+import { connectDB } from './db/connection.js';
+import { createContext } from './context.js';
+import { authResolvers } from './resolvers/auth.js';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+// Connect to MongoDB
+connectDB();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const typeDefs = readFileSync(join(__dirname, 'schema.graphql'), 'utf8');
 
-
-const resolvers: Resolvers = {
+const baseResolvers: Resolvers = {
   Node: {
     __resolveType(obj) {
       if ('pages' in obj) return 'Book';
@@ -237,6 +246,22 @@ const resolvers: Resolvers = {
   },
 };
 
+const resolvers = {
+  Query: {
+    ...baseResolvers.Query,
+    ...authResolvers.Query
+  },
+  Mutation: {
+    ...baseResolvers.Mutation,
+    ...authResolvers.Mutation
+  },
+  Node: baseResolvers.Node,
+  Content: baseResolvers.Content,
+  Book: baseResolvers.Book,
+  Author: baseResolvers.Author,
+  Review: baseResolvers.Review
+};
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -244,6 +269,7 @@ const server = new ApolloServer({
 
 const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: createContext,
 });
 
 console.log(`🚀 Server ready at: ${url}`);

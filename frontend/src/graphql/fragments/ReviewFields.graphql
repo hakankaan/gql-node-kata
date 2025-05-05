@@ -1,0 +1,11 @@
+fragment ReviewFields on Review {
+  id
+  title
+  createdAt
+  rating
+  content
+  book {
+    id
+    title
+  }
+} 

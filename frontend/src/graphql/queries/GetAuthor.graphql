@@ -1,0 +1,10 @@
+query GetAuthor($id: ID!) {
+  author(id: $id) {
+    ...AuthorFields
+    books {
+      id
+      title
+      createdAt
+    }
+  }
+}

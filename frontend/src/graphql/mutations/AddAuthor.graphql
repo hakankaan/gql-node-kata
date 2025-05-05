@@ -1,0 +1,5 @@
+mutation AddAuthor($name: String!, $bio: String) {
+  addAuthor(name: $name, bio: $bio) {
+    ...AuthorFields
+  }
+}

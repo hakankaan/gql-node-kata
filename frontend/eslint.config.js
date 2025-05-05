@@ -3,6 +3,7 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
+import graphqlPlugin from '@graphql-eslint/eslint-plugin'
 
 export default tseslint.config(
   { ignores: ['dist'] },
@@ -25,4 +26,18 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ['**/*.graphql'],
+    languageOptions: {
+      parser: graphqlPlugin.parser
+    },
+    plugins: {
+      '@graphql-eslint': graphqlPlugin
+    },
+    rules: {
+      '@graphql-eslint/known-type-names': 'error',
+      '@graphql-eslint/no-anonymous-operations': 'error',
+      '@graphql-eslint/no-duplicate-fields': 'error',
+    }
+  }
 )
