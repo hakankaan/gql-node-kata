@@ -4,6 +4,7 @@ query GetAuthor($id: ID!) {
     books {
       id
       title
+      title
       createdAt
     }
   }

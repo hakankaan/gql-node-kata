@@ -3,4 +3,3 @@ query GetBook($id: ID!) {
     ...BookFields
   }
 }
-

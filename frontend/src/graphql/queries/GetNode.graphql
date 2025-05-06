@@ -26,4 +26,4 @@ query GetNode($id: ID!) {
       }
     }
   }
-} 
+}
